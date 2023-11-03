@@ -29,18 +29,18 @@ jobs:
 
     - name: Terraform Init
       run: |
-        cd infra
+       
         terraform init 
         terraform validate
 
     - name: Terraform Plan
       run: |
-        cd infra
+       
         terraform plan -input=false -out=tfplan
 
     - name: Terraform Apply
       continue-on-error: true
       run: |
-        cd infra
+        
         terraform apply -input=false  -auto-approve
       
