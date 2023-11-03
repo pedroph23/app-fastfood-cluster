@@ -47,6 +47,7 @@ resource "aws_eks_fargate_profile" "my_fargate_profile" {
   pod_execution_role_arn  = aws_iam_role.fargate_execution_role_1.arn
   subnet_ids              = aws_subnet.my_subnets[*].id
 
+
   selector {
     namespace = "default"  # Substitua pelo namespace Kubernetes desejado
   }
