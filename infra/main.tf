@@ -24,7 +24,7 @@ resource "aws_subnet" "my_subnets" {
   map_public_ip_on_launch = true
 }
 
-resource "aws_iam_role" "eks_cluster_role" {
+resource "aws_iam_role" "eks_cluster_role_1" {
   name = "eks-cluster-role"
 
   assume_role_policy = jsonencode({
@@ -52,7 +52,7 @@ resource "aws_eks_fargate_profile" "my_fargate_profile" {
   }
 }
 
-resource "aws_iam_role" "fargate_execution_role" {
+resource "aws_iam_role" "fargate_execution_role_1" {
   name = "eks-fargate-execution-role"
 
   assume_role_policy = jsonencode({
