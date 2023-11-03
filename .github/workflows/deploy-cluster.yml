@@ -29,7 +29,7 @@ jobs:
 
     - name: Terraform Init
       run: |
-       
+        ls -la
         terraform init 
         terraform validate
 
