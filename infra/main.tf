@@ -8,7 +8,7 @@ resource "aws_vpc" "my_vpc" {
 
 resource "aws_eks_cluster" "my_cluster" {
   name     = "my-eks-cluster"
-  role_arn = aws_iam_role.eks_cluster_role.arn
+  role_arn = aws_iam_role.eks_cluster_role_1.arn
 
   vpc_config {
     subnet_ids = aws_subnet.my_subnets[*].id
@@ -44,7 +44,7 @@ resource "aws_iam_role" "eks_cluster_role_1" {
 resource "aws_eks_fargate_profile" "my_fargate_profile" {
   cluster_name            = aws_eks_cluster.my_cluster.name
   fargate_profile_name    = "my-fargate-profile"
-  pod_execution_role_arn  = aws_iam_role.fargate_execution_role.arn
+  pod_execution_role_arn  = aws_iam_role.fargate_execution_role_1.arn
   subnet_ids              = aws_subnet.my_subnets[*].id
 
   selector {
