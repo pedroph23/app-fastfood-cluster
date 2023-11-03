@@ -3,7 +3,7 @@ name: Deploy AWS Lambda
 on:
   push:
     branches:
-      - feature/cluster-eks-fargate
+      - main
 
 permissions:
     id-token: write # This is required for requesting the JWT
