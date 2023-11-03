@@ -5,11 +5,11 @@ provider "aws" {
 data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
-    values = ["amazon-eks-node-v*"]
+    values = ["amazon-eks-node-1.21-v*"]
   }
 
   most_recent = true
-  owners      = ["602401143452"] # Amazon EKS AMI account ID
+  owners      = ["101478099523"] # Amazon EKS AMI account ID
 }
 
 resource "aws_eks_cluster" "my_cluster" {
