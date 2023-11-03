@@ -17,7 +17,7 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
-      
+
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
@@ -31,18 +31,18 @@ jobs:
 
     - name: Terraform Init
       run: |
-        ls -la
+        cd infra
         terraform init 
         terraform validate
 
     - name: Terraform Plan
       run: |
-       
+        cd infra
         terraform plan -input=false -out=tfplan
 
     - name: Terraform Apply
       continue-on-error: true
       run: |
-        
+        cd infra
         terraform apply -input=false  -auto-approve
       
