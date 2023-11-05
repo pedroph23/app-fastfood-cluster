@@ -40,16 +40,6 @@ resource "aws_subnet" "fargate_subnets" {
   cidr_block              = element(["10.0.3.0/24", "10.0.4.0/24"], count.index)
 }
 
-variable "control_plane_subnet_ids" {
-  type    = list(string)
-  default = aws_subnet.control_plane_subnets[*].id
-}
-
-variable "subnet_ids" {
-  type    = list(string)
-  default = aws_subnet.fargate_subnets[*].id
-}
-
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
@@ -59,8 +49,8 @@ module "eks" {
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.28"
   vpc_id          = module.vpc.vpc_id
-  control_plane_subnet_ids = var.control_plane_subnet_ids
-  subnet_ids = var.subnet_ids
+  control_plane_subnet_ids = aws_subnet.control_plane_subnets[*].id
+  subnet_ids = aws_subnet.fargate_subnets[*].id
 
   tags = {
     Terraform   = "true"
@@ -72,7 +62,7 @@ resource "aws_eks_fargate_profile" "my_fargate_profile" {
   cluster_name            = module.eks.cluster_name
   fargate_profile_name    = "my-fargate-profile"
   pod_execution_role_arn  = aws_iam_role.fargate_execution_role.arn
-  subnet_ids              = module.vpc.private_subnets
+  subnet_ids              = aws_subnet.fargate_subnets[*].id
 
   selector {
     namespace = "default"  # Substitua pelo namespace Kubernetes desejado
