@@ -44,4 +44,5 @@ resource "aws_eks_fargate_profile" "my_fargate_profile" {
   selector {
     namespace = "default"  # Substitua pelo namespace Kubernetes desejado
   }
+
 }
