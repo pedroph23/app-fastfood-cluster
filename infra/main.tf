@@ -20,23 +20,36 @@ resource "aws_iam_role" "eks_cluster_role" {
   })
 }
 
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
-
-  name = "my-vpc"
-  cidr = "10.0.0.0/16"
-
-  azs             = ["us-east-1a", "us-east-1b"]  # Substitua pelas zonas de disponibilidade desejadas
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]  # Substitua pelos blocos de subrede desejados
-  public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]  # Substitua pelos blocos de subrede desejados
-
-  enable_nat_gateway = true
-
-  tags = {
-    Terraform   = "true"
-    Environment = "prod"
-  }
+resource "aws_vpc" "my_vpc" {
+  cidr_block = "10.0.0.0/16"
 }
+
+resource "aws_subnet" "control_plane_subnets" {
+  count = 2
+
+  vpc_id                  = aws_vpc.my_vpc.id
+  availability_zone       = element(["us-east-1a", "us-east-1b"], count.index)
+  cidr_block              = element(["10.0.1.0/24", "10.0.2.0/24"], count.index)
+}
+
+resource "aws_subnet" "fargate_subnets" {
+  count = 2
+
+  vpc_id                  = aws_vpc.my_vpc.id
+  availability_zone       = element(["us-east-1a", "us-east-1b"], count.index)
+  cidr_block              = element(["10.0.3.0/24", "10.0.4.0/24"], count.index)
+}
+
+variable "control_plane_subnet_ids" {
+  type    = list(string)
+  default = aws_subnet.control_plane_subnets[*].id
+}
+
+variable "subnet_ids" {
+  type    = list(string)
+  default = aws_subnet.fargate_subnets[*].id
+}
+
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
@@ -46,6 +59,8 @@ module "eks" {
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.28"
   vpc_id          = module.vpc.vpc_id
+  control_plane_subnet_ids = var.control_plane_subnet_ids
+  subnet_ids = var.subnet_ids
 
   tags = {
     Terraform   = "true"
