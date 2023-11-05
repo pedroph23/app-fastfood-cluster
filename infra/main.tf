@@ -52,10 +52,7 @@ module "eks" {
   control_plane_subnet_ids = aws_subnet.control_plane_subnets[*].id
   subnet_ids = aws_subnet.fargate_subnets[*].id
 
-  tags = {
-    Terraform   = "true"
-    Environment = "prod"
-  }
+
 }
 
 resource "aws_eks_fargate_profile" "my_fargate_profile" {
