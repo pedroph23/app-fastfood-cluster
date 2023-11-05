@@ -2,6 +2,24 @@ provider "aws" {
   region = "us-east-1"  # Substitua pela sua região preferida
 }
 
+
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "eks-cluster-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "eks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
@@ -38,10 +56,27 @@ module "eks" {
 resource "aws_eks_fargate_profile" "my_fargate_profile" {
   cluster_name            = module.eks.cluster_name
   fargate_profile_name    = "my-fargate-profile"
-  pod_execution_role_arn  = module.eks.fargate_execution_role_arn
+  pod_execution_role_arn  = aws_iam_role.fargate_execution_role.arn
   subnet_ids              = module.vpc.private_subnets
 
   selector {
     namespace = "default"  # Substitua pelo namespace Kubernetes desejado
   }
+}
+
+resource "aws_iam_role" "fargate_execution_role" {
+  name = "eks-fargate-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "eks-fargate-pods.amazonaws.com"
+        }
+      }
+    ]
+  })
 }
