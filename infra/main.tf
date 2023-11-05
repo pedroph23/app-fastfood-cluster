@@ -48,7 +48,7 @@ module "eks" {
 
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.28"
-  vpc_id          = module.vpc.vpc_id
+  vpc_id          = aws_vpc.my_vpc.id
   control_plane_subnet_ids = aws_subnet.control_plane_subnets[*].id
   subnet_ids = aws_subnet.fargate_subnets[*].id
 
