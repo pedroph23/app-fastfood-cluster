@@ -3,6 +3,7 @@ name: Deploy AWS Lambda
 on:
   push:
     branches:
+      - feature/cluster-eks-fargate
       - main
 
 permissions:
