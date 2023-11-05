@@ -16,22 +16,21 @@ module "vpc" {
 
   tags = {
     Terraform   = "true"
-    Environment = "prod"
+    Environment = "dev"
   }
 }
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
-  manage_aws_auth_configmap = true
-  aws_auth_users            = ["arn:aws:iam::101478099523:root"]
+
   cluster_name    = "my-eks-cluster"
-  cluster_version = "1.28"
+  cluster_version = "1.21"
   subnets         = module.vpc.private_subnets
   vpc_id          = module.vpc.vpc_id
 
   tags = {
     Terraform   = "true"
-    Environment = "prod"
+    Environment = "dev"
   }
 }
 
