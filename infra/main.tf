@@ -27,6 +27,9 @@ module "eks" {
  cluster_version = "1.28"
  vpc_id         = module.vpc.vpc_id
 
+ control_plane_subnet_ids = module.vpc.private_subnets
+ subnet_ids               = module.vpc.private_subnets
+
  tags = {
    Terraform  = "true"
    Environment = "dev"
