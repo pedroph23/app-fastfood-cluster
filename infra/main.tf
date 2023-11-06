@@ -72,3 +72,20 @@ resource "aws_iam_role_policy_attachment" "eks_service_policy_attachment" {
 }
 
 
+resource "aws_iam_role_policy" "eks_nodegroup_policy" {
+  name = "eks_nodegroup_policy"
+  role = "deploy_lambda_dynamo"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "eks:CreateNodegroup",
+      "Resource": "arn:aws:eks:us-east-1:101478099523:cluster/my-eks-cluster"
+    }
+  ]
+}
+EOF
+}
