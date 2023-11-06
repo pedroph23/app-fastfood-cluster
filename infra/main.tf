@@ -82,7 +82,7 @@ resource "aws_iam_role_policy" "eks_nodegroup_policy" {
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": "eks:CreateNodegroup",
+      "Action": "eks:*",
       "Resource": "arn:aws:eks:us-east-1:101478099523:cluster/my-eks-cluster"
     }
   ]
@@ -90,20 +90,3 @@ resource "aws_iam_role_policy" "eks_nodegroup_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy" "eks_tag_policy" {
-  name = "eks_tag_policy"
-  role = "deploy_lambda_dynamo"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "eks:TagResource",
-      "Resource": "arn:aws:eks:us-east-1:101478099523:cluster/my-eks-cluster"
-    }
-  ]
-}
-EOF
-}
