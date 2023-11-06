@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc" {
  source = "terraform-aws-modules/vpc/aws"
- version = "19.7.0"
+ 
 
  name = "my-vpc"
  cidr = "10.0.0.0/16"
@@ -18,7 +18,7 @@ module "vpc" {
 
 module "eks" {
  source = "terraform-aws-modules/eks/aws"
-
+ version = "19.7.0"
  cluster_name  = "my-eks-cluster"
  cluster_version = "1.28"
  vpc_id        = module.vpc.vpc_id
