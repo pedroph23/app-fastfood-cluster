@@ -16,39 +16,50 @@ module "vpc" {
  enable_nat_gateway = true
 }
 
+resource "aws_security_group" "ssh_cluster" {
+  name        = "ssh_cluster"
+  vpc_id      = module.vpc.vpc_id
+}
+
+resource "aws_security_group_rule" "ssh_cluster_in" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"] #0.0.0.0 - 255.255.255.255
+  security_group_id = aws_security_group.ssh_cluster.id
+}
+
+resource "aws_security_group_rule" "ssh_cluster_out" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"] #0.0.0.0 - 255.255.255.255
+  security_group_id = aws_security_group.ssh_cluster.id
+}
+
 module "eks" {
  source = "terraform-aws-modules/eks/aws"
  version = "19.0.0"
  cluster_name  = "my-eks-cluster"
  cluster_version = "1.28"
- vpc_id        = module.vpc.vpc_id
+  cluster_endpoint_private_access = true
 
- control_plane_subnet_ids = module.vpc.private_subnets
- subnet_ids              = module.vpc.private_subnets
- create_kms_key = false
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  eks_managed_node_groups = {
+    alura = {
+      min_size     = 1
+      max_size     = 10
+      desired_size = 3
+      vpc_security_group_ids = [aws_security_group.ssh_cluster.id]
+      instance_types = ["t2.micro"]
+    }
+  }
 }
 
-resource "aws_iam_role" "fargate_role" {
- name = "eks-fargate-role"
-
- assume_role_policy = jsonencode({
-  Version = "2012-10-17"
-  Statement = [
-    {
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "eks-fargate-pods.amazonaws.com"
-      }
-    },
-  ]
- })
-}
-
-resource "aws_iam_role_policy_attachment" "fargate_policy_attachment" {
- role      = aws_iam_role.fargate_role.name
- policy_arn = "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
-}
 
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy_attachment" {
  role      = "deploy_lambda_dynamo"
@@ -60,13 +71,4 @@ resource "aws_iam_role_policy_attachment" "eks_service_policy_attachment" {
  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
 }
 
-resource "aws_eks_fargate_profile" "my_fargate_profile" {
- cluster_name         = module.eks.cluster_name
- fargate_profile_name = "my-fargate-profile"
- pod_execution_role_arn = aws_iam_role.fargate_role.arn
- subnet_ids           = module.vpc.private_subnets
 
- selector {
-  namespace = "default"
- }
-}
