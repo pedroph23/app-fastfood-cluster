@@ -9,6 +9,8 @@ Seja bem vindo(a)!
  - [Marcus Gomes](https://github.com/mvgv)
  - [Maria Eulina Melo](https://github.com/xLinaMeloox)
 
+  ## Repositórios desta aplicação
+
  - [Repositório da aplicação](https://github.com/pedroph23/app-fastfood)
  - [Repositório do lambda](https://github.com/pedroph23/app-fastfood-lambda)
  - [Repositório da database](https://github.com/pedroph23/app-fastfood-database)
