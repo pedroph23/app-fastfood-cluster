@@ -1,0 +1,39 @@
+# Parte 2: Destruição
+name: Deploy AWS Lambda - Destroy
+
+on:
+ push:
+   branches:
+     - main
+   paths:
+     - '**/*destroy*/**'
+
+jobs:
+ deploy:
+   runs-on: ubuntu-latest
+
+   steps:
+   - name: Checkout repository
+     uses: actions/checkout@v2
+
+   - name: Set up AWS CLI
+     uses: aws-actions/configure-aws-credentials@v4.0.1
+     with:
+       role-to-assume: arn:aws:iam::101478099523:role/deploy_lambda_dynamo
+       aws-region: us-east-1 # Substitua pela sua região
+
+   - name: Set up Terraform
+     uses: hashicorp/setup-terraform@v2
+     with:
+       terraform_version: latest
+
+   - name: Terraform Init
+     run: |
+       cd infra
+       terraform init 
+       terraform validate
+
+   - name: Terraform Destroy
+     run: |
+       cd infra
+       terraform destroy -auto-approve

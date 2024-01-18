@@ -3,8 +3,9 @@ name: Deploy AWS Lambda
 on:
   push:
     branches:
-      - feature/cluster-eks-fargate
       - main
+    paths-ignore:
+      - '**/*destroy*/**'
 
 permissions:
     id-token: write # This is required for requesting the JWT
@@ -23,7 +24,7 @@ jobs:
       uses: aws-actions/configure-aws-credentials@v4.0.1
       with:
         role-to-assume: arn:aws:iam::101478099523:role/deploy_lambda_dynamo
-        aws-region: us-east-1 # Substitua pela sua região
+        aws-region: us-east-1 
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
